@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.ebo2022.pmweather_cs.core.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "pmweathercs.refmap.json",
+  "mixins": [
+    "WorldHelperMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
