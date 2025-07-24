@@ -5,6 +5,7 @@ import com.momosoftworks.coldsweat.api.event.core.init.DefaultTempModifiersEvent
 import com.momosoftworks.coldsweat.api.event.core.registry.TempModifierRegisterEvent;
 import com.momosoftworks.coldsweat.api.temperature.modifier.BiomeTempModifier;
 import com.momosoftworks.coldsweat.api.temperature.modifier.ElevationTempModifier;
+import com.momosoftworks.coldsweat.api.temperature.modifier.compat.SereneSeasonsTempModifier;
 import com.momosoftworks.coldsweat.api.util.Temperature;
 import dev.ebo2022.pmweather_cs.common.temperature.modifier.WrappedClimateTempModifier;
 import dev.ebo2022.pmweather_cs.common.temperature.modifier.WrappedElevationTempModifier;
@@ -44,7 +45,7 @@ public class PMWeatherCS {
     @SubscribeEvent
     private static void addDefaultTempModifiers(DefaultTempModifiersEvent event) {
         // get rid of stock biome-related modifiers
-        event.getModifiers(Temperature.Trait.WORLD).removeIf(modifier -> modifier instanceof BiomeTempModifier || modifier instanceof ElevationTempModifier);
+        event.getModifiers(Temperature.Trait.WORLD).removeIf(modifier -> modifier instanceof BiomeTempModifier || modifier instanceof ElevationTempModifier || modifier instanceof SereneSeasonsTempModifier);
         event.addModifier(Temperature.Trait.WORLD, new WrappedClimateTempModifier());
         event.addModifier(Temperature.Trait.WORLD, new WrappedElevationTempModifier());
     }
