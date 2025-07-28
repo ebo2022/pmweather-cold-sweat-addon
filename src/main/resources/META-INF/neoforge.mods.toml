@@ -96,9 +96,17 @@ side="BOTH"
 
 [[dependencies.${mod_id}]]
 modId="cold_sweat"
-type="required"
+type="optional"
 # This version range declares a minimum of the current minecraft version up to but not including the next major version
-versionRange="[2.4-b04a,)"
+versionRange="[${cold_sweat_version},)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="toughasnails"
+type="optional"
+# This version range declares a minimum of the current minecraft version up to but not including the next major version
+versionRange="[${tan_version},)"
 ordering="NONE"
 side="BOTH"
 

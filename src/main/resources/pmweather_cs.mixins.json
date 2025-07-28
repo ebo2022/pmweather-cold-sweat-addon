@@ -1,10 +1,12 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "dev.ebo2022.pmweather_cs.core.mixin",
+  "plugin": "dev.ebo2022.pmtemperature.core.mixin.PMTemperatureMixinPlugin",
+  "package": "dev.ebo2022.pmtemperature.core.mixin",
   "compatibilityLevel": "JAVA_8",
   "refmap": "pmweathercs.refmap.json",
   "mixins": [
+    "TemperatureHelperImplMixin",
     "WorldHelperMixin"
   ],
   "client": [

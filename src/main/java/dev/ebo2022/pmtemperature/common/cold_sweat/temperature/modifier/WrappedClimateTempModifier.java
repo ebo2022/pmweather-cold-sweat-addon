@@ -1,9 +1,9 @@
-package dev.ebo2022.pmweather_cs.common.temperature.modifier;
+package dev.ebo2022.pmtemperature.common.cold_sweat.temperature.modifier;
 
 import com.momosoftworks.coldsweat.api.temperature.modifier.BiomeTempModifier;
 import com.momosoftworks.coldsweat.api.util.Temperature;
-import dev.ebo2022.pmweather_cs.core.PMWeatherCS;
-import dev.ebo2022.pmweather_cs.core.PMWeatherCSConfig;
+import dev.ebo2022.pmtemperature.core.PMTemperature;
+import dev.ebo2022.pmtemperature.core.PMTemperatureConfig;
 import dev.protomanly.pmweather.config.ServerConfig;
 import dev.protomanly.pmweather.event.GameBusEvents;
 import dev.protomanly.pmweather.weather.ThermodynamicEngine;
@@ -29,7 +29,7 @@ public class WrappedClimateTempModifier extends BiomeTempModifier {
                     0
             );
             return temp -> {
-                double ambientTemp = PMWeatherCSConfig.useApparentTemperature ? PMWeatherCS.getApparentTemperature(data.temperature(), data.dewpoint(), WindEngine.getWind(entity.position(), level)) : data.temperature();
+                double ambientTemp = PMTemperatureConfig.useApparentTemperature ? PMTemperature.getApparentTemperature(data.temperature(), data.dewpoint(), WindEngine.getWind(entity.position(), level)) : data.temperature();
                 return temp + Temperature.convert(ambientTemp, Temperature.Units.C, Temperature.Units.MC, true);
             };
         }

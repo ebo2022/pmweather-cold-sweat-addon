@@ -1,10 +1,10 @@
-package dev.ebo2022.pmweather_cs.core;
+package dev.ebo2022.pmtemperature.core;
 
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
-public class PMWeatherCSConfig {
+public class PMTemperatureConfig {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
     private static final ModConfigSpec.BooleanValue USE_APPARENT_TEMPERATURE = BUILDER
             .comment("Accounts for factors such as dew point and wind speed when calculating the temperature to supply to Cold Sweat.")
@@ -15,7 +15,7 @@ public class PMWeatherCSConfig {
 
     @SubscribeEvent
     private static void onLoad(ModConfigEvent event) {
-        PMWeatherCS.LOGGER.info("Loading PMWeather CS config");
+        PMTemperature.LOGGER.info("Loading PMWeather CS config");
         if (event.getConfig().getSpec() == SPEC && !(event instanceof ModConfigEvent.Unloading)) {
             useApparentTemperature = USE_APPARENT_TEMPERATURE.getAsBoolean();
         }

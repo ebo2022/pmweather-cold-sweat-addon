@@ -1,4 +1,4 @@
-package dev.ebo2022.pmweather_cs.common.temperature.modifier;
+package dev.ebo2022.pmtemperature.common.cold_sweat.temperature.modifier;
 
 import com.momosoftworks.coldsweat.api.temperature.modifier.ElevationTempModifier;
 import com.momosoftworks.coldsweat.api.util.Temperature;
