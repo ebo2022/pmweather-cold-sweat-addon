@@ -9,7 +9,6 @@ import com.momosoftworks.coldsweat.api.temperature.modifier.compat.SereneSeasons
 import com.momosoftworks.coldsweat.api.util.Temperature;
 import dev.ebo2022.pmtemperature.common.cold_sweat.temperature.modifier.WrappedClimateTempModifier;
 import dev.ebo2022.pmtemperature.common.cold_sweat.temperature.modifier.WrappedElevationTempModifier;
-import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
@@ -24,16 +23,13 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
 import org.slf4j.Logger;
 
-import java.util.logging.Level;
-
 @Mod(PMTemperature.MOD_ID)
 public class PMTemperature {
-    public static final String MOD_ID = "pmweather_cs";
+    public static final String MOD_ID = "pmtemperature";
     public static final Logger LOGGER = LogUtils.getLogger();
     private static boolean COLD_SWEAT_LOADED = ModList.get().isLoaded("cold_sweat");
 
     public PMTemperature(IEventBus modEventBus, ModContainer modContainer, Dist dist) {
-        NeoForge.EVENT_BUS.register(PMTemperature.class);
         modEventBus.register(PMTemperatureConfig.class);
 
         modContainer.registerConfig(ModConfig.Type.SERVER, PMTemperatureConfig.SPEC);

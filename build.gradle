@@ -123,8 +123,8 @@ dependencies {
 
     implementation "maven.modrinth:protomanlys-weather:${pmweather_version}-alpha"
     implementation "maven.modrinth:cold-sweat:${cold_sweat_version}"
-    implementation "maven.modrinth:tough-as-nails:${tan_version}"
-    implementation "maven.modrinth:glitchcore:${glitchcore_version}"
+    implementation "maven.modrinth:ge1sOdFH:${tan_modrinth_version}"
+    implementation "maven.modrinth:s3dmwKy5:${glitchcore_version}"
 
 }
 
@@ -143,7 +143,10 @@ tasks.withType(ProcessResources).configureEach {
             mod_license            : mod_license,
             mod_version            : mod_version,
             mod_authors            : mod_authors,
-            mod_description        : mod_description
+            mod_description        : mod_description,
+            cold_sweat_version     : cold_sweat_version,
+            pmweather_version      : pmweather_version,
+            tan_version            : tan_version
     ]
     inputs.properties replaceProperties
 

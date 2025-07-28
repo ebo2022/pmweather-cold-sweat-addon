@@ -90,7 +90,7 @@ config="${mod_id}.mixins.json"
 modId="pmweather"
 type="required"
 # This version range declares a minimum of the current minecraft version up to but not including the next major version
-versionRange="[0.15.0-1.21.1-alpha,0.15.999-1.21.1-alpha)"
+versionRange="[${pmweather_version}-1.21.1-alpha,)"
 ordering="NONE"
 side="BOTH"
 
