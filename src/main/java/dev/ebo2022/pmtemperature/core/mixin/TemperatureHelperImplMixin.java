@@ -5,9 +5,11 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import dev.ebo2022.pmtemperature.core.PMTemperature;
 import dev.ebo2022.pmtemperature.core.PMTemperatureConfig;
 import dev.protomanly.pmweather.config.ServerConfig;
+import dev.protomanly.pmweather.event.GameBusClientEvents;
 import dev.protomanly.pmweather.event.GameBusEvents;
 import dev.protomanly.pmweather.weather.ThermodynamicEngine;
 import dev.protomanly.pmweather.weather.WeatherHandler;
+import dev.protomanly.pmweather.weather.WeatherHandlerClient;
 import dev.protomanly.pmweather.weather.WindEngine;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
@@ -64,11 +66,22 @@ public class TemperatureHelperImplMixin {
     private static void rainModifier(Level level, BlockPos pos, TemperatureLevel current, CallbackInfoReturnable<TemperatureLevel> cir) {
         ResourceKey<Level> dimension = level.dimension();
         if (ServerConfig.validDimensions.contains(dimension)) {
-            WeatherHandler handler = GameBusEvents.MANAGERS.get(dimension);
+            double precip;
+            WeatherHandler weatherHandler;
             Vec3 vec3 = new Vec3(pos.getX(), pos.getY() + 1, pos.getZ());
-            if (handler.getPrecipitation(vec3) > 0D && pos.getY() >= level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).below().getY()) {
+
+            if (level.isClientSide()) {
+                GameBusClientEvents.getClientWeather();
+                weatherHandler = GameBusClientEvents.weatherHandler;
+                precip = weatherHandler.getPrecipitation(vec3);
+            } else {
+                weatherHandler = GameBusEvents.MANAGERS.get(level.dimension());
+                precip = weatherHandler.getPrecipitation(pos.getCenter());
+            }
+
+            if (precip >= 0.2F && level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).getY() > pos.getY()) {
                 ThermodynamicEngine.Precipitation type = ThermodynamicEngine.getPrecipitationType(
-                        handler,
+                        weatherHandler,
                         vec3,
                         level,
                         0
