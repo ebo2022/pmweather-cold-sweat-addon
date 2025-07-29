@@ -4,6 +4,7 @@ import com.momosoftworks.coldsweat.util.world.WorldHelper;
 import dev.protomanly.pmweather.config.ServerConfig;
 import dev.protomanly.pmweather.event.GameBusEvents;
 import dev.protomanly.pmweather.weather.ThermodynamicEngine;
+import dev.protomanly.pmweather.weather.WeatherHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
@@ -20,13 +21,15 @@ public class WorldHelperMixin {
     private static void isRainingAt(Level level, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
         ResourceKey<Level> dimension = level.dimension();
         if (ServerConfig.validDimensions.contains(dimension)) {
+            WeatherHandler handler = GameBusEvents.MANAGERS.get(dimension);
+            Vec3 vec3 = new Vec3(pos.getX(), pos.getY() + 1, pos.getZ());
             ThermodynamicEngine.Precipitation type = ThermodynamicEngine.getPrecipitationType(
-                    GameBusEvents.MANAGERS.get(dimension),
-                    new Vec3(pos.getX(), pos.getY() + 1, pos.getZ()),
+                    handler,
+                    vec3,
                     level,
                     0
             );
-            cir.setReturnValue(type == ThermodynamicEngine.Precipitation.RAIN && WorldHelper.canSeeSky(level, pos, level.getMaxBuildHeight()));
+            cir.setReturnValue(handler.getPrecipitation(vec3) > 0D && type == ThermodynamicEngine.Precipitation.RAIN && WorldHelper.canSeeSky(level, pos, level.getMaxBuildHeight()));
         }
     }
 }

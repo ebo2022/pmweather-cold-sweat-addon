@@ -4,9 +4,11 @@ import com.mojang.logging.LogUtils;
 import com.momosoftworks.coldsweat.api.event.core.init.DefaultTempModifiersEvent;
 import com.momosoftworks.coldsweat.api.event.core.registry.TempModifierRegisterEvent;
 import com.momosoftworks.coldsweat.api.temperature.modifier.BiomeTempModifier;
+import com.momosoftworks.coldsweat.api.temperature.modifier.CaveBiomeTempModifier;
 import com.momosoftworks.coldsweat.api.temperature.modifier.ElevationTempModifier;
 import com.momosoftworks.coldsweat.api.temperature.modifier.compat.SereneSeasonsTempModifier;
 import com.momosoftworks.coldsweat.api.util.Temperature;
+import dev.ebo2022.pmtemperature.common.cold_sweat.temperature.modifier.WrappedCaveBiomeTempModifier;
 import dev.ebo2022.pmtemperature.common.cold_sweat.temperature.modifier.WrappedClimateTempModifier;
 import dev.ebo2022.pmtemperature.common.cold_sweat.temperature.modifier.WrappedElevationTempModifier;
 import net.minecraft.resources.ResourceLocation;
@@ -42,14 +44,16 @@ public class PMTemperature {
                 public void registerTempModifiers(TempModifierRegisterEvent event) {
                     event.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "wrapped_climate"), WrappedClimateTempModifier::new);
                     event.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "wrapped_elevation"), WrappedElevationTempModifier::new);
+                    event.register(ResourceLocation.fromNamespaceAndPath(MOD_ID, "wrapped_cave_biome"), WrappedCaveBiomeTempModifier::new);
                 }
 
                 @SubscribeEvent
                 public void addDefaultTempModifiers(DefaultTempModifiersEvent event) {
                     // get rid of stock biome-related modifiers
-                    event.getModifiers(Temperature.Trait.WORLD).removeIf(modifier -> modifier instanceof BiomeTempModifier || modifier instanceof ElevationTempModifier || modifier instanceof SereneSeasonsTempModifier);
+                    event.getModifiers(Temperature.Trait.WORLD).removeIf(modifier -> modifier instanceof BiomeTempModifier || modifier instanceof ElevationTempModifier || modifier instanceof CaveBiomeTempModifier || modifier instanceof SereneSeasonsTempModifier);
                     event.addModifier(Temperature.Trait.WORLD, new WrappedClimateTempModifier());
                     event.addModifier(Temperature.Trait.WORLD, new WrappedElevationTempModifier());
+                    event.addModifier(Temperature.Trait.WORLD, new WrappedCaveBiomeTempModifier());
                 }
             });
         }

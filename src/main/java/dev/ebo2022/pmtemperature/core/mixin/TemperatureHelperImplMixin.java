@@ -7,6 +7,7 @@ import dev.ebo2022.pmtemperature.core.PMTemperatureConfig;
 import dev.protomanly.pmweather.config.ServerConfig;
 import dev.protomanly.pmweather.event.GameBusEvents;
 import dev.protomanly.pmweather.weather.ThermodynamicEngine;
+import dev.protomanly.pmweather.weather.WeatherHandler;
 import dev.protomanly.pmweather.weather.WindEngine;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
@@ -63,10 +64,12 @@ public class TemperatureHelperImplMixin {
     private static void rainModifier(Level level, BlockPos pos, TemperatureLevel current, CallbackInfoReturnable<TemperatureLevel> cir) {
         ResourceKey<Level> dimension = level.dimension();
         if (ServerConfig.validDimensions.contains(dimension)) {
-            if (pos.getY() >= level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).below().getY()) {
+            WeatherHandler handler = GameBusEvents.MANAGERS.get(dimension);
+            Vec3 vec3 = new Vec3(pos.getX(), pos.getY() + 1, pos.getZ());
+            if (handler.getPrecipitation(vec3) > 0D && pos.getY() >= level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).below().getY()) {
                 ThermodynamicEngine.Precipitation type = ThermodynamicEngine.getPrecipitationType(
-                        GameBusEvents.MANAGERS.get(dimension),
-                        new Vec3(pos.getX(), pos.getY() + 1, pos.getZ()),
+                        handler,
+                        vec3,
                         level,
                         0
                 );
