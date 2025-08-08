@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 public class PMTemperature {
     public static final String MOD_ID = "pmtemperature";
     public static final Logger LOGGER = LogUtils.getLogger();
-    private static boolean COLD_SWEAT_LOADED = ModList.get().isLoaded("cold_sweat");
+    private static final boolean COLD_SWEAT_LOADED = ModList.get().isLoaded("cold_sweat");
 
     public PMTemperature(IEventBus modEventBus, ModContainer modContainer, Dist dist) {
         modEventBus.register(PMTemperatureConfig.class);
@@ -58,8 +58,6 @@ public class PMTemperature {
             });
         }
     }
-
-
 
     public static double getApparentTemperature(float airTemp, float dewPoint, Vec3 wind) {
         if (airTemp > 19)

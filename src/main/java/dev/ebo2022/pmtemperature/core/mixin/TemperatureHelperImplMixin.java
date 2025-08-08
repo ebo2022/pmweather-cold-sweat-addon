@@ -4,12 +4,11 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import dev.ebo2022.pmtemperature.core.PMTemperature;
 import dev.ebo2022.pmtemperature.core.PMTemperatureConfig;
+import dev.ebo2022.pmtemperature.core.util.PMUtil;
 import dev.protomanly.pmweather.config.ServerConfig;
-import dev.protomanly.pmweather.event.GameBusClientEvents;
 import dev.protomanly.pmweather.event.GameBusEvents;
 import dev.protomanly.pmweather.weather.ThermodynamicEngine;
 import dev.protomanly.pmweather.weather.WeatherHandler;
-import dev.protomanly.pmweather.weather.WeatherHandlerClient;
 import dev.protomanly.pmweather.weather.WindEngine;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
@@ -33,7 +32,7 @@ public class TemperatureHelperImplMixin {
         if (ServerConfig.validDimensions.contains(dimension)) {
             ThermodynamicEngine.AtmosphericDataPoint data  = ThermodynamicEngine.samplePoint(
                     GameBusEvents.MANAGERS.get(dimension),
-                    pos.getBottomCenter(),
+                    pos.getCenter(),
                     level,
                     null,
                     0
@@ -64,25 +63,15 @@ public class TemperatureHelperImplMixin {
 
     @Inject(method = "rainModifier", at = @At("HEAD"), cancellable = true)
     private static void rainModifier(Level level, BlockPos pos, TemperatureLevel current, CallbackInfoReturnable<TemperatureLevel> cir) {
-        ResourceKey<Level> dimension = level.dimension();
-        if (ServerConfig.validDimensions.contains(dimension)) {
-            double precip;
-            WeatherHandler weatherHandler;
-            Vec3 vec3 = new Vec3(pos.getX(), pos.getY() + 1, pos.getZ());
-
-            if (level.isClientSide()) {
-                GameBusClientEvents.getClientWeather();
-                weatherHandler = GameBusClientEvents.weatherHandler;
-                precip = weatherHandler.getPrecipitation(vec3);
-            } else {
-                weatherHandler = GameBusEvents.MANAGERS.get(level.dimension());
-                precip = weatherHandler.getPrecipitation(pos.getCenter());
-            }
+        if (ServerConfig.validDimensions.contains(level.dimension())) {
+            WeatherHandler weatherHandler = PMUtil.getWeatherHandler(level);
+            Vec3 overheadPos = PMUtil.overheadPos(pos);
+            double precip = weatherHandler.getPrecipitation(overheadPos);
 
             if (precip >= 0.2F && level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).getY() > pos.getY()) {
                 ThermodynamicEngine.Precipitation type = ThermodynamicEngine.getPrecipitationType(
                         weatherHandler,
-                        vec3,
+                        overheadPos,
                         level,
                         0
                 );
@@ -102,13 +91,7 @@ public class TemperatureHelperImplMixin {
     private static boolean immersionModifier(Level level, BlockPos pos, Operation<Boolean> original) {
         ResourceKey<Level> dimension = level.dimension();
         if (ServerConfig.validDimensions.contains(dimension)) {
-            ThermodynamicEngine.Precipitation type = ThermodynamicEngine.getPrecipitationType(
-                    GameBusEvents.MANAGERS.get(dimension),
-                    new Vec3(pos.getX(), pos.getY() + 1, pos.getZ()),
-                    level,
-                    0
-            );
-            return type != null && pos.getY() >= level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).below().getY();
+            return level.isRainingAt(pos) && pos.getY() >= level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).below().getY();
         }
         return original.call(level, pos);
     }

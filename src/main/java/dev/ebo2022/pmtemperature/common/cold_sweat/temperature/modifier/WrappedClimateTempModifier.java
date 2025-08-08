@@ -4,8 +4,8 @@ import com.momosoftworks.coldsweat.api.temperature.modifier.BiomeTempModifier;
 import com.momosoftworks.coldsweat.api.util.Temperature;
 import dev.ebo2022.pmtemperature.core.PMTemperature;
 import dev.ebo2022.pmtemperature.core.PMTemperatureConfig;
+import dev.ebo2022.pmtemperature.core.util.PMUtil;
 import dev.protomanly.pmweather.config.ServerConfig;
-import dev.protomanly.pmweather.event.GameBusEvents;
 import dev.protomanly.pmweather.weather.ThermodynamicEngine;
 import dev.protomanly.pmweather.weather.WindEngine;
 import net.minecraft.resources.ResourceKey;
@@ -22,7 +22,7 @@ public class WrappedClimateTempModifier extends BiomeTempModifier {
         ResourceKey<Level> dimension = level.dimension();
         if (ServerConfig.validDimensions.contains(dimension)) {
             ThermodynamicEngine.AtmosphericDataPoint data  = ThermodynamicEngine.samplePoint(
-                    GameBusEvents.MANAGERS.get(dimension),
+                    PMUtil.getWeatherHandler(level),
                     entity.position(),
                     level,
                     null,

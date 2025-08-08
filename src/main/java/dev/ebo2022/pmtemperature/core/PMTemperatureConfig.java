@@ -15,8 +15,8 @@ public class PMTemperatureConfig {
 
     @SubscribeEvent
     private static void onLoad(ModConfigEvent event) {
-        PMTemperature.LOGGER.info("Loading PMWeather CS config");
         if (event.getConfig().getSpec() == SPEC && !(event instanceof ModConfigEvent.Unloading)) {
+            PMTemperature.LOGGER.info("Loading PMWTemperature config");
             useApparentTemperature = USE_APPARENT_TEMPERATURE.getAsBoolean();
         }
     }
