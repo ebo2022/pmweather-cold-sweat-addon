@@ -30,22 +30,25 @@ public class TemperatureHelperImplMixin {
     private static void getBiomeTemperatureLevel(Level level, BlockPos pos, CallbackInfoReturnable<TemperatureLevel> cir) {
         ResourceKey<Level> dimension = level.dimension();
         if (ServerConfig.validDimensions.contains(dimension)) {
-            ThermodynamicEngine.AtmosphericDataPoint data  = ThermodynamicEngine.samplePoint(
-                    GameBusEvents.MANAGERS.get(dimension),
-                    pos.getCenter(),
-                    level,
-                    null,
-                    0
-            );
+            WeatherHandler handler = PMUtil.getWeatherHandler(level);
+            if (handler != null) {
+                ThermodynamicEngine.AtmosphericDataPoint data  = ThermodynamicEngine.samplePoint(
+                        GameBusEvents.MANAGERS.get(dimension),
+                        pos.getCenter(),
+                        level,
+                        null,
+                        0
+                );
 
-            double temperature = PMTemperatureConfig.useApparentTemperature ? PMTemperature.getApparentTemperature(data.temperature(), data.dewpoint(), WindEngine.getWind(pos, level)) : data.temperature();
-            temperature = temperature / 25d;
+                double temperature = PMTemperatureConfig.useApparentTemperature ? PMTemperature.getApparentTemperature(data.temperature(), data.dewpoint(), WindEngine.getWind(pos, level)) : data.temperature();
+                temperature = temperature / 25d;
 
-            if (temperature < 0.15D) cir.setReturnValue(TemperatureLevel.ICY);
-            if (temperature >= 0.15F && temperature < 0.45F) cir.setReturnValue(TemperatureLevel.COLD);
-            if (temperature >= 0.45F && temperature < 0.85F) cir.setReturnValue(TemperatureLevel.NEUTRAL);
-            if (temperature >= 0.85F && temperature < 1.0F) cir.setReturnValue(TemperatureLevel.WARM);
-            if (temperature >= 1.0F) cir.setReturnValue(TemperatureLevel.HOT);
+                if (temperature < 0.15D) cir.setReturnValue(TemperatureLevel.ICY);
+                if (temperature >= 0.15F && temperature < 0.45F) cir.setReturnValue(TemperatureLevel.COLD);
+                if (temperature >= 0.45F && temperature < 0.85F) cir.setReturnValue(TemperatureLevel.NEUTRAL);
+                if (temperature >= 0.85F && temperature < 1.0F) cir.setReturnValue(TemperatureLevel.WARM);
+                if (temperature >= 1.0F) cir.setReturnValue(TemperatureLevel.HOT);
+            }
         }
     }
 
@@ -65,24 +68,26 @@ public class TemperatureHelperImplMixin {
     private static void rainModifier(Level level, BlockPos pos, TemperatureLevel current, CallbackInfoReturnable<TemperatureLevel> cir) {
         if (ServerConfig.validDimensions.contains(level.dimension())) {
             WeatherHandler weatherHandler = PMUtil.getWeatherHandler(level);
-            Vec3 overheadPos = PMUtil.overheadPos(pos);
-            double precip = weatherHandler.getPrecipitation(overheadPos);
+            if (weatherHandler != null) {
+                Vec3 overheadPos = PMUtil.overheadPos(pos);
+                double precip = weatherHandler.getPrecipitation(overheadPos);
 
-            if (precip >= 0.2F && level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).getY() > pos.getY()) {
-                ThermodynamicEngine.Precipitation type = ThermodynamicEngine.getPrecipitationType(
-                        weatherHandler,
-                        overheadPos,
-                        level,
-                        0
-                );
-                if (type == ThermodynamicEngine.Precipitation.RAIN || type == ThermodynamicEngine.Precipitation.FREEZING_RAIN || type == ThermodynamicEngine.Precipitation.HAIL)
-                    cir.setReturnValue(current.increment(ModConfig.temperature.wetTemperatureChange));
-                if (type == ThermodynamicEngine.Precipitation.SNOW || type == ThermodynamicEngine.Precipitation.SLEET || type == ThermodynamicEngine.Precipitation.WINTRY_MIX)
-                    cir.setReturnValue(current.increment(ModConfig.temperature.snowTemperatureChange));
-                else
+                if (precip >= 0.2F && level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, pos).getY() > pos.getY()) {
+                    ThermodynamicEngine.Precipitation type = ThermodynamicEngine.getPrecipitationType(
+                            weatherHandler,
+                            overheadPos,
+                            level,
+                            0
+                    );
+                    if (type == ThermodynamicEngine.Precipitation.RAIN || type == ThermodynamicEngine.Precipitation.FREEZING_RAIN || type == ThermodynamicEngine.Precipitation.HAIL)
+                        cir.setReturnValue(current.increment(ModConfig.temperature.wetTemperatureChange));
+                    if (type == ThermodynamicEngine.Precipitation.SNOW || type == ThermodynamicEngine.Precipitation.SLEET || type == ThermodynamicEngine.Precipitation.WINTRY_MIX)
+                        cir.setReturnValue(current.increment(ModConfig.temperature.snowTemperatureChange));
+                    else
+                        cir.setReturnValue(current);
+                } else  {
                     cir.setReturnValue(current);
-            } else  {
-                cir.setReturnValue(current);
+                }
             }
         }
     }
